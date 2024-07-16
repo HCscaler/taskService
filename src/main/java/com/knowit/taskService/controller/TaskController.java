@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knowit.taskService.entities.Task;
+import com.knowit.taskService.exception.TaskNotFoundException;
 import com.knowit.taskService.services.TaskService;
 
 @RestController
@@ -29,7 +30,12 @@ public class TaskController {
     
     @GetMapping("/{id}")
     public Task getTaskById(@PathVariable int id) {
-        return taskService.getTaskById(id);
+    	Task task = taskService.getTaskById(id);
+    	if(task==null)
+    	{
+    		throw new TaskNotFoundException("Task is not found");
+    	}
+        return task;
     }
     
     @PutMapping("/{id}")
@@ -44,11 +50,21 @@ public class TaskController {
     
     @GetMapping("/user/{userId}")
     public List<Task> getTasksByUserId(@PathVariable int userId) {
-        return taskService.getTasksByUserId(userId);
+    	List<Task> task= taskService.getTasksByUserId(userId);
+    	if(task == null)
+    	{
+    		throw new TaskNotFoundException("Task is not found with the userId "+userId);
+    	}
+        return task;
     }
     @GetMapping("/project/{projectId}")
     public List<Task> getTaskByProjectId(@PathVariable int projectId)
     {
-    	return taskService.getTasksByProjectId(projectId);
+    	List<Task> task = taskService.getTasksByProjectId(projectId);
+    	if(task == null)
+    	{
+    		throw new TaskNotFoundException("Task is not found with the projectId "+projectId);
+    	}
+    	return task;
     }
 }
