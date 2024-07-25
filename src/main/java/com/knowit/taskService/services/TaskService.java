@@ -2,6 +2,7 @@ package com.knowit.taskService.services;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,25 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
     
+    @Autowired
+    private CommentClient commentClient;
+    
+    public TaskService(TaskRepository taskReposirository , CommentClient commentClient)
+    {
+    	super();
+    	this.taskRepository=taskReposirository;
+    	this.commentClient=commentClient;
+    }
+    
     public Task createTask(Task task) {
         return taskRepository.save(task);
     }
-    
+    public List<Task> getAllTask()
+    {
+    	List<Task> task = taskRepository.findAll();
+    	List<Task> newTask = task.stream().map(t -> {t.setCommnts(commentClient.getComment(t.getProjectId(), t.getId())); return t;}).collect(Collectors.toList());
+    	return newTask;
+    }
     public Task getTaskById(int id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + id));
@@ -46,6 +62,8 @@ public class TaskService {
     }
     public List<Task> getTasksByProjectId(int projectId)
     {
-    	return taskRepository.findByProjectId(projectId);
+    	List<Task> task = taskRepository.findByProjectId(projectId);
+    	List<Task> tasks = task.stream().map(t -> {t.setCommnts(commentClient.getAllCommentOfProject(t.getProjectId())); return t;}).collect(Collectors.toList());
+    	return tasks;
     }
 }

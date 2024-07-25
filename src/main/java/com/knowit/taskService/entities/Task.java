@@ -5,6 +5,7 @@ import lombok.Data;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -37,7 +38,7 @@ public class Task {
     @Column(name = "project_id")
     private Integer projectId;
 
-    
+    transient  private List<Comment> commnts;
 }
 
 
