@@ -58,7 +58,10 @@ public class TaskService {
     }
     
     public List<Task> getTasksByUserId(int userId) {
-        return taskRepository.findByUserId(userId);
+       // return taskRepository.findByUserId(userId);
+    	List<Task> task = taskRepository.findByUserId(userId);
+    	List<Task> newTask = task.stream().map(t -> {t.setCommnts(commentClient.getComment(t.getProjectId(), t.getId())); return t;}).collect(Collectors.toList());
+    	return newTask;
     }
     public List<Task> getTasksByProjectId(int projectId)
     {

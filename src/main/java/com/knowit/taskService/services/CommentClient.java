@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.knowit.taskService.entities.Comment;
 
-@FeignClient(url = "http://localhost:5000",value="commentService")
+@FeignClient(name="commentService",value="commentService")
 public interface CommentClient {
 
 	@GetMapping("/projects/{projectId}/tasks/{taskId}/comments")
