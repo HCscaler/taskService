@@ -10,9 +10,7 @@ import com.knowit.taskService.entities.Comment;
 @FeignClient(name="commentService",value="commentService")
 public interface CommentClient {
 
-	@GetMapping("/projects/{projectId}/tasks/{taskId}/comments")
+	@GetMapping("comment/projects/{projectId}/tasks/{taskId}/comments")
 	List<Comment> getComment(@PathVariable int projectId ,@PathVariable int taskId);
 	
-	@GetMapping("/project/{projectId}")
-	List<Comment> getAllCommentOfProject(@PathVariable int projectId);
 }
