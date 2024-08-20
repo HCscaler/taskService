@@ -5,9 +5,14 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowit.taskService.entities.Task;
+import com.knowit.taskService.entities.User;
 import com.knowit.taskService.repositories.TaskRepository;
 
 @Service
@@ -18,6 +23,20 @@ public class TaskService {
     @Autowired
     private CommentClient commentClient;
     
+    @Autowired
+	public KafkaTemplate<String, String> kafkaTemplate;
+ 
+    @Autowired
+    ObjectMapper objectMapper;
+    
+	public static final String TOPIC = "tasks";
+ 
+	public void sendTaskToKafka(Task task) throws JsonProcessingException {
+		String str = objectMapper.writeValueAsString(task);
+		kafkaTemplate.send("tasks", str);
+		System.out.println("Tasks :"+task);
+	}
+    
     public TaskService(TaskRepository taskReposirository , CommentClient commentClient)
     {
     	super();
@@ -25,8 +44,11 @@ public class TaskService {
     	this.commentClient=commentClient;
     }
     
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
+    public Task createTask(Task task) throws JsonProcessingException {
+    	
+    	Task task1 = taskRepository.save(task);
+    	sendTaskToKafka(task1);
+        return task1;
     }
     public List<Task> getAllTask()
     {

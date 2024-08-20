@@ -37,6 +37,8 @@ public class Task {
 
     @Column(name = "project_id")
     private Integer projectId;
+    
+    transient User user;
 
     transient  private List<Comment> commnts;
 }
